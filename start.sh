@@ -1,3 +1,5 @@
+#!/bin/sh
+
 if [ -f "/dujiaoka/.env" ];then
   echo "配置文件已存在，请确保配置文件正确！"
   else
