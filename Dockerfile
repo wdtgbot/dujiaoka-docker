@@ -3,7 +3,7 @@ From webdevops/php-nginx:7.4-alpine
 ARG version=v1.8.2
 
 RUN git clone --branch $version --depth=1 https://github.com/assimon/dujiaoka.git /dujiaoka \
-    && cd /dujiaoka && composer install \
+    && cd /dujiaoka && composer install || composer update laravel/framework && composer install\
     && mkdir /conf
 
 COPY default.conf /opt/docker/etc/nginx/conf.d/
