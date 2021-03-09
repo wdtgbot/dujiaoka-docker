@@ -7,3 +7,8 @@ RUN git clone --branch $version --depth=1 https://github.com/assimon/dujiaoka.gi
 COPY default.conf /opt/docker/etc/nginx/conf.d/
 COPY fastcgi.conf /conf
 COPY pathinfo.conf /conf
+COPY start.sh /conf
+
+RUN chmod +x /conf/start.sh
+
+ENTRYPOINT ["/conf/start.sh"]
