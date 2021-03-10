@@ -35,4 +35,4 @@ jobs:
           push: true
           tags: |
             ghcr.io/apocalypsor/dujiaoka:latest
-            ghcr.io/apocalypsor/dujiaoka:${VERSION}
+            ghcr.io/apocalypsor/dujiaoka:${{ env.VERSION }}
