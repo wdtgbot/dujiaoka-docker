@@ -1,4 +1,4 @@
-From webdevops/php-nginx:7.2-alpine
+From webdevops/php-nginx:7.3-alpine
 
 ARG version=v1.8.2
 
