@@ -3,7 +3,7 @@ From webdevops/php-nginx:7.4-alpine
 ARG version=v1.8.2
 
 RUN git clone --branch $version --depth=1 https://github.com/assimon/dujiaoka.git /dujiaoka \
-    && chmod -R 755 /dujiaoka/app && mkdir /conf
+    && mkdir /conf
 
 COPY ./conf/default.conf /opt/docker/etc/nginx/conf.d/
 COPY ./conf/dujiao.conf /opt/docker/etc/supervisor.d/
