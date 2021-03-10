@@ -6,8 +6,7 @@ if [ -f "/www/wwwroot/dujiaoka/.env" ];then
     cd /www/wwwroot/dujiaoka && composer install
     status=$?
     if [ $status -ne 0 ]; then
-        composer remove laravel/framework
-        composer require laravel/framework:6.18.7
+        composer update laravel/framework
         composer install
     fi
     php artisan dujiao install
