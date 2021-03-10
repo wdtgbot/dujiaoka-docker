@@ -34,5 +34,5 @@ jobs:
           platforms: linux/amd64
           push: true
           tags: |
-            ghcr.io/apocalypsor/overture:latest
-            ghcr.io/apocalypsor/overture:$VERSION
+            ghcr.io/apocalypsor/dujiaoka:latest
+            ghcr.io/apocalypsor/dujiaoka:${VERSION}
