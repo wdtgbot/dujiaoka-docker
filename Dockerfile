@@ -14,6 +14,7 @@ RUN set -xe \
     && composer install -vvv \
     && chmod +x /start.sh \
     && chmod -R 777 /dujiaoka \
-    && sed -i "s?\$proxies;?\$proxies=\'\*\*\';?" /dujiaoka/app/Http/Middleware/TrustProxies.php
+    && sed -i "s?\$proxies;?\$proxies=\'\*\*\';?" /dujiaoka/app/Http/Middleware/TrustProxies.php \
+    && sed -i "s/dfFxrate = 0.13/dfFxrate = 0.16/g" /dujiaoka/app/Http/Controllers/Pay/StripeController.php
 
 CMD /start.sh
