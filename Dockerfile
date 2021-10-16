@@ -10,10 +10,8 @@ COPY start.sh /
 RUN set -xe \
     && rm -rf /var/lib/apt/lists/* \
     && composer install -vvv \
-    && touch install.lock \
     && chmod +x /start.sh \
     && chmod -R 777 /dujiaoka \
-    && cp -r storage storage_bak \
     && sed -i "s?\$proxies;?\$proxies=\'\*\*\';?" /dujiaoka/app/Http/Middleware/TrustProxies.php
 
 CMD /start.sh
