@@ -12,7 +12,7 @@ RUN set -xe \
     && composer install -vvv \
     && touch install.lock \
     && chmod +x /start.sh \
-    && chmod 777 storage install.lock \
+    && chmod -R 777 /dujiaoka \
     && cp -r storage storage_bak \
     && sed -i "s?\$proxies;?\$proxies=\'\*\*\';?" /dujiaoka/app/Http/Middleware/TrustProxies.php
 
