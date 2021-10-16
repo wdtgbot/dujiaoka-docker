@@ -16,6 +16,4 @@ RUN set -xe \
     && cp -r storage storage_bak \
     && sed -i "s?\$proxies;?\$proxies=\'\*\*\';?" /dujiaoka/app/Http/Middleware/TrustProxies.php
 
-VOLUME /dujiaoka/storage
-    
 CMD /start.sh

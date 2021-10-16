@@ -7,7 +7,6 @@ services:
       dockerfile: Dockerfile
     container_name: faka
     volumes:
-      - ./test/storage:/dujiaoka/storage
       - ./test/env.conf:/dujiaoka/.env
     ports:
       - 127.0.0.1:56789:80
