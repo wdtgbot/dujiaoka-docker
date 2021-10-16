@@ -1,5 +1,7 @@
 FROM webdevops/php-nginx:7.4-alpine
 
+ENV INSTALL=true
+
 WORKDIR /dujiaoka
 
 COPY dujiaoka/ /dujiaoka
@@ -12,6 +14,7 @@ RUN set -xe \
     && composer install -vvv \
     && chmod +x /start.sh \
     && chmod -R 777 /dujiaoka \
-    && sed -i "s?\$proxies;?\$proxies=\'\*\*\';?" /dujiaoka/app/Http/Middleware/TrustProxies.php
+    && sed -i "s?\$proxies;?\$proxies=\'\*\*\';?" /dujiaoka/app/Http/Middleware/TrustProxies.php \
+    && [ "$INSTALL" != "true" ] && echo "ok" > install.lock || true
 
 CMD /start.sh
