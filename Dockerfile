@@ -1,4 +1,4 @@
-FROM webdevops/php-nginx:8.0-alpine
+FROM webdevops/php-nginx:7.4
 
 COPY dujiaoka/ /dujiaoka
 COPY ./conf/default.conf /opt/docker/etc/nginx/vhost.conf
