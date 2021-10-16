@@ -1,15 +1,16 @@
-From webdevops/php-nginx:7.3-alpine
+From webdevops/php-nginx:7.4-alpine
 
-ARG version=v1.8.2
-
-RUN mkdir -p /www/wwwroot \
-    && git clone --branch $version --depth=1 https://github.com/assimon/dujiaoka.git /www/wwwroot/dujiaoka
-
-COPY ./conf/default.conf /tmp
+COPY dujiaoka/ /dujiaoka
+COPY ./conf/default.conf /opt/docker/etc/nginx/vhost.conf
 COPY ./conf/dujiao.conf /opt/docker/etc/supervisor.d/
 COPY start.sh /
 
-RUN cat /tmp/default.conf > /opt/docker/etc/nginx/vhost.conf \
-    && chmod +x /start.sh
+WORKDIR /dujiaoka
+
+RUN composer install -vvv \
+    && touch install.lock \
+    && chmod +x /start.sh \
+    && chmod 777 storage install.lock \
+    && cp -r storage storage_bak
 
 ENTRYPOINT ["/start.sh"]
