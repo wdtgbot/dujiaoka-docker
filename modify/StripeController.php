@@ -491,7 +491,7 @@ class StripeController extends PayController
     public function getUsdCurrency($cny)
     {
         $dfFxrate = 0.16;
-        return bcmul($cny , $dfFxrate 2) + 0.3;
+        return bcmul($cny , $dfFxrate, 2) + 0.3;
     }
 
 
