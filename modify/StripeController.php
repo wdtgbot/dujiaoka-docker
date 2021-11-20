@@ -217,7 +217,9 @@ class StripeController extends PayController
     <p><small>订单编号：$orderid</small></p>
     <div class=\"am-tabs\" data-am-tabs=\"\">
         <ul class=\"am-tabs-nav am-nav am-nav-tabs\">
+            <li class=\"am-active\"><a href=\"#alipay\">Alipay 支付宝</a></li>
             <li class=\"request-wechat-pay\"><a href=\"#wcpay\">微信支付</a></li>
+            <li class=\"request-card-pay\"><a href=\"#cardpay\">银行卡支付</a></li>
         </ul>
         <div class=\"am-tabs-bd am-tabs-bd-ofv\"
              style=\"touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\">
@@ -228,7 +230,6 @@ class StripeController extends PayController
                     </div>
                 </div>
             </div>
-        </div>
     </div>
 </div>
 </div>
