@@ -195,16 +195,10 @@ class StripeController extends PayController
     <p><small>订单编号：$orderid</small></p>
     <div class=\"am-tabs\" data-am-tabs=\"\">
         <ul class=\"am-tabs-nav am-nav am-nav-tabs\">
-            
             <li class=\"request-wechat-pay\"><a href=\"#wcpay\">微信支付</a></li>
-            
         </ul>
         <div class=\"am-tabs-bd am-tabs-bd-ofv\"
              style=\"touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\">
-            <div class=\"am-tab-panel am-active\" id=\"alipay\">
-                <a class=\"am-btn am-btn-lg am-btn-warning am-btn-primary\" id=\"alipaybtn\" href=\"#\">进入支付宝付款</a>
-                <p></p>
-            </div>
             <div class=\"am-tab-panel am-fade\" id=\"wcpay\">
                 <div class=\"text-align:center; margin:0 auto; width:60%\">
                     <div class=\"wcpay-qrcode\" style=\"text-align: center; \" data-requested=\"0\">
@@ -212,29 +206,6 @@ class StripeController extends PayController
                     </div>
                 </div>
             </div>
-            <div class=\"am-tab-panel am-fade\" id=\"cardpay\">
-                <div class=\"text-align:center; margin:0 auto; width:60%\">
-                <div class=\"wrapper cardpay_content\" style=\"max-width:500px\">
-                <div class=\"am-alert am-alert-danger\" style=\"display:none\">支付失败，请更换卡片或检查输入信息</div>
-                    <form action=\"/pay/stripe/charge\" method=\"post\" id=\"payment-form\">
-                        <div class=\"form-row\">
-                            <label for=\"card-element\">
-                                <p class='am-alert am-alert-secondary'>借记卡或信用卡</p>
-                            </label>
-                            <div id=\"card-element\">
-                                <!-- A Stripe Element will be inserted here. -->
-                            </div>
-                            <!-- Used to display form errors. -->
-                            <div id=\"card-errors\" role=\"alert\"></div>
-                        </div>
-                            <div class=\"form-row\">
-                            <button class=\"button\">支付</button>
-                        </div>
-                    </form>
-                </div>
-                 </div>
-            </div>
-        </div>
     </div>
 </div>
 </div>
@@ -327,39 +298,6 @@ class StripeController extends PayController
         });
     }
     (function () {
-        stripe.createSource({
-            type: 'alipay',
-            amount: $amount,
-            currency: 'cny',
-            // 这里你需要渲染出一些用户的信息，不然后期没法知道是谁在付钱
-            owner: {
-                name: '$orderid',
-            },
-            redirect: {
-                return_url: '$return_url',
-            },
-        }).then(function (result) {
-            $(\"#alipaybtn\").attr(\"href\", result.source.redirect.url);
-        });
-    })();
-    function paymentcheck() {
-        $.ajax({
-            url: '/pay/stripe/check/?orderid=$orderid&source=' + source,
-            type: 'GET',
-            success: function (result) {
-                if (result == \"success\") {
-                    $(\".wcpay-qrcode\").html(\"\");
-                    $(\".wcpay-qrcode\").html(\"<p class='am-alert am-alert-success'>支付成功，正在跳转页面</p>\");
-                    window.setTimeout(function () {
-                        location.href = \"/detail-order-sn/$orderid\"
-                    }, 800);
-                } else {
-                    setTimeout(\"paymentcheck()\", 1000);
-                }
-            }
-        });
-    }
-    $(\".request-wechat-pay\").click(function () {
         if ($(\".wcpay-qrcode\").data(\"requested\") == 0) {
             stripe.createSource({
                 type: 'wechat',
@@ -384,7 +322,24 @@ class StripeController extends PayController
                 // handle result.error or result.source
             });
         }
-    });
+    })();
+    function paymentcheck() {
+        $.ajax({
+            url: '/pay/stripe/check/?orderid=$orderid&source=' + source,
+            type: 'GET',
+            success: function (result) {
+                if (result == \"success\") {
+                    $(\".wcpay-qrcode\").html(\"\");
+                    $(\".wcpay-qrcode\").html(\"<p class='am-alert am-alert-success'>支付成功，正在跳转页面</p>\");
+                    window.setTimeout(function () {
+                        location.href = \"/detail-order-sn/$orderid\"
+                    }, 800);
+                } else {
+                    setTimeout(\"paymentcheck()\", 1000);
+                }
+            }
+        });
+    }
 </script>
 </body>
 </html>";
