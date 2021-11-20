@@ -7,6 +7,7 @@ if [ -f "/dujiaoka/.env" ]; then
     if [ "$INSTALL" != "true" ]; then
         echo "ok" > install.lock
     fi
+    chmod -R 777 storage
     supervisord
 else
     echo "配置文件不存在，请根据文档修改配置文件！"
