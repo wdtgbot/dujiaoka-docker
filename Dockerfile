@@ -7,6 +7,7 @@ WORKDIR /dujiaoka
 COPY dujiaoka/ /dujiaoka
 COPY ./conf/default.conf /opt/docker/etc/nginx/vhost.conf
 COPY ./conf/dujiao.conf /opt/docker/etc/supervisor.d/
+COPY ./modify/StripeController.php /dujiaoka/app/Http/Controllers/Pay/StripeController.php
 COPY start.sh /
 
 RUN set -xe \
@@ -14,7 +15,6 @@ RUN set -xe \
     && composer install -vvv \
     && chmod +x /start.sh \
     && chmod -R 777 /dujiaoka \
-    && sed -i "s?\$proxies;?\$proxies=\'\*\*\';?" /dujiaoka/app/Http/Middleware/TrustProxies.php \
-    && sed -i "s/dfFxrate = 0.13/dfFxrate = 0.16/g" /dujiaoka/app/Http/Controllers/Pay/StripeController.php
+    && sed -i "s?\$proxies;?\$proxies=\'\*\*\';?" /dujiaoka/app/Http/Middleware/TrustProxies.php
 
 CMD /start.sh
