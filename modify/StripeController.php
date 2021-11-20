@@ -52,7 +52,6 @@ class StripeController extends PayController
                 position: static;
                 background: none;
             }
-
             .am-offcanvas-bar {
                 position: static;
                 width: auto;
@@ -61,12 +60,10 @@ class StripeController extends PayController
                 -ms-transform: translate3d(0, 0, 0);
                 transform: translate3d(0, 0, 0);
             }
-
             .am-offcanvas-bar:after {
                 content: none;
             }
         }
-
         @media only screen and (max-width: 640px) {
             .am-offcanvas-bar .am-nav > li > a {
                 color: #ccc;
@@ -74,12 +71,10 @@ class StripeController extends PayController
                 border-top: 1px solid rgba(0, 0, 0, .3);
                 box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05)
             }
-
             .am-offcanvas-bar .am-nav > li > a:hover {
                 background: #404040;
                 color: #fff
             }
-
             .am-offcanvas-bar .am-nav > li.am-nav-header {
                 color: #777;
                 background: #404040;
@@ -89,79 +84,62 @@ class StripeController extends PayController
                 font-weight: 400;
                 font-size: 75%
             }
-
             .am-offcanvas-bar .am-nav > li.am-active > a {
                 background: #1a1a1a;
                 color: #fff;
                 box-shadow: inset 0 1px 3px rgba(0, 0, 0, .3)
             }
-
             .am-offcanvas-bar .am-nav > li + li {
                 margin-top: 0;
             }
         }
-
         .my-head {
             margin-top: 40px;
             text-align: center;
         }
-
         .am-tab-panel {
             text-align: center;
             margin-top: 50px;
             margin-bottom: 50px;
         }
-
         .my-footer {
             border-top: 1px solid #eeeeee;
             padding: 10px 0;
             margin-top: 10px;
             text-align: center;
         }
-
         .panel-title {
             display: inline;
             font-weight: bold;
         }
-
         .display-table {
             display: table;
         }
-
         .display-tr {
             display: table-row;
         }
-
         .display-td {
             display: table-cell;
             vertical-align: middle;
             width: 61%;
         }
-
         .StripeElement {
             box-sizing: border-box;
-
             height: 40px;
-
             padding: 10px 12px;
-
             border: 1px solid transparent;
             border-radius: 4px;
             background-color: white;
-
             box-shadow: 0 1px 3px 0 #e6ebf1;
             -webkit-transition: box-shadow 150ms ease;
             transition: box-shadow 150ms ease;
         }
-
         .StripeElement--focus {
             box-shadow: 0 1px 3px 0 #cfd7df;
         }
-
         .StripeElement--invalid {
             border-color: #fa755a;
         }
-
         .StripeElement--webkit-autofill {
             background-color: #fefde5 !important;
         }
@@ -217,12 +195,16 @@ class StripeController extends PayController
     <p><small>订单编号：$orderid</small></p>
     <div class=\"am-tabs\" data-am-tabs=\"\">
         <ul class=\"am-tabs-nav am-nav am-nav-tabs\">
-            <li class=\"am-active\"><a href=\"#alipay\">Alipay 支付宝</a></li>
+            
             <li class=\"request-wechat-pay\"><a href=\"#wcpay\">微信支付</a></li>
-            <li class=\"request-card-pay\"><a href=\"#cardpay\">银行卡支付</a></li>
+            
         </ul>
         <div class=\"am-tabs-bd am-tabs-bd-ofv\"
              style=\"touch-action: pan-y; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0);\">
+            <div class=\"am-tab-panel am-active\" id=\"alipay\">
+                <a class=\"am-btn am-btn-lg am-btn-warning am-btn-primary\" id=\"alipaybtn\" href=\"#\">进入支付宝付款</a>
+                <p></p>
+            </div>
             <div class=\"am-tab-panel am-fade\" id=\"wcpay\">
                 <div class=\"text-align:center; margin:0 auto; width:60%\">
                     <div class=\"wcpay-qrcode\" style=\"text-align: center; \" data-requested=\"0\">
@@ -230,6 +212,29 @@ class StripeController extends PayController
                     </div>
                 </div>
             </div>
+            <div class=\"am-tab-panel am-fade\" id=\"cardpay\">
+                <div class=\"text-align:center; margin:0 auto; width:60%\">
+                <div class=\"wrapper cardpay_content\" style=\"max-width:500px\">
+                <div class=\"am-alert am-alert-danger\" style=\"display:none\">支付失败，请更换卡片或检查输入信息</div>
+                    <form action=\"/pay/stripe/charge\" method=\"post\" id=\"payment-form\">
+                        <div class=\"form-row\">
+                            <label for=\"card-element\">
+                                <p class='am-alert am-alert-secondary'>借记卡或信用卡</p>
+                            </label>
+                            <div id=\"card-element\">
+                                <!-- A Stripe Element will be inserted here. -->
+                            </div>
+                            <!-- Used to display form errors. -->
+                            <div id=\"card-errors\" role=\"alert\"></div>
+                        </div>
+                            <div class=\"form-row\">
+                            <button class=\"button\">支付</button>
+                        </div>
+                    </form>
+                </div>
+                 </div>
+            </div>
+        </div>
     </div>
 </div>
 </div>
@@ -237,10 +242,8 @@ class StripeController extends PayController
     var stripe = Stripe('$pk');
     var source = '';
     // Create a Stripe client.
-
     // Create an instance of Elements.
     var elements = stripe.elements();
-
     // Custom styling can be passed to options when creating an Element.
     // (Note that this demo uses a wider set of styles than the guide below.)
     var style = {
@@ -258,13 +261,10 @@ class StripeController extends PayController
             iconColor: '#fa755a'
         }
     };
-
     // Create an instance of the card Element.
     var card = elements.create('card', {style: style});
-
     // Add an instance of the card Element into the `card-element` <div>.
     card.mount('#card-element');
-
     // Handle real-time validation errors from the card Element.
     card.on('change', function (event) {
         var displayError = document.getElementById('card-errors');
@@ -274,7 +274,6 @@ class StripeController extends PayController
             displayError.textContent = '';
         }
     });
-
     // Handle form submission.
     var form = document.getElementById('payment-form');
     form.addEventListener('submit', function (event) {
@@ -292,7 +291,6 @@ class StripeController extends PayController
             }
         });
     });
-
     // Submit the form with the token ID.
     function stripeTokenHandler(token) {
         // Insert the token ID into the form so it gets submitted to the server
@@ -328,7 +326,6 @@ class StripeController extends PayController
             }
         });
     }
-
     (function () {
         stripe.createSource({
             type: 'alipay',
@@ -345,7 +342,6 @@ class StripeController extends PayController
             $(\"#alipaybtn\").attr(\"href\", result.source.redirect.url);
         });
     })();
-
     function paymentcheck() {
         $.ajax({
             url: '/pay/stripe/check/?orderid=$orderid&source=' + source,
@@ -363,7 +359,6 @@ class StripeController extends PayController
             }
         });
     }
-
     $(\".request-wechat-pay\").click(function () {
         if ($(\".wcpay-qrcode\").data(\"requested\") == 0) {
             stripe.createSource({
