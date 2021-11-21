@@ -15,6 +15,7 @@ RUN set -xe \
     && composer install -vvv \
     && chmod +x /start.sh \
     && chmod -R 777 /dujiaoka \
+    && mv /dujiaoka/storage /dujiaoka/storage_bak \
     && sed -i "s?\$proxies;?\$proxies=\'\*\*\';?" /dujiaoka/app/Http/Middleware/TrustProxies.php
 
 CMD /start.sh
