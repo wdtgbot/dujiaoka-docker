@@ -25,8 +25,8 @@ jobs:
       - name: Update Exchange Rates
         run: |
           sudo apt-get install -y jq bc
-          usdcny=`curl -sSL "http://api.currencylayer.com/live?access_key=6aa8e7d031256487cd884d292553d6e2&f" | jq '.quotes.USDCNY'`
-          res=0`echo "scale=4;1/$usdcny" | bc`
+          gbpcny=`curl -sSL "https://api.dov.moe/exchange?src=cny&dst=gbp"`
+          res=0`echo "scale=4;${gbpcny}*1.029" | bc`
           sed -i "s/dfFxrate = .*;/dfFxrate = $res;/g" modify/StripeController.php
       - name: Update Submodules
         run: git submodule foreach 'git fetch origin; git checkout $(git rev-parse --abbrev-ref HEAD); git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); git submodule update --recursive; git clean -dfx'
