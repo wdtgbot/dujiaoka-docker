@@ -458,7 +458,7 @@ class StripeController extends PayController
         if ($fxrate['code'] != 1) {
             $dfFxrate = 0.12;
         } else {
-            $dfFxrate = $fxrate['data']['value'];
+            $dfFxrate = $fxrate['data']['value'] * 1.029;
         }
         return bcmul($cny , $dfFxrate, 2) + 0.2;
     }
