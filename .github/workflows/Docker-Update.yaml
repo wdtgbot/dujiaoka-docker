@@ -25,9 +25,13 @@ jobs:
       - name: Update Exchange Rates
         run: |
           sudo apt-get install -y jq bc
-          gbpcny=`curl -sSL "https://api.dov.moe/exchange?src=cny&dst=gbp"`
-          res=0`echo "scale=4;${gbpcny}*1.029" | bc`
-          sed -i "s/dfFxrate = .*;/dfFxrate = $res;/g" modify/StripeController.php
+          curl_result=`curl -sSL "https://api.dov.moe/exchange?src=cny&dst=gbp"`
+          curl_code=`echo $curl_result | jq -r ".code"`
+          if [ $curl_code -eq 1 ]; then
+            gbpcny=`echo $curl_result | jq -r ".data.value"`
+            res=0`echo "scale=4;${gbpcny}*1.029" | bc`
+            sed -i "s/dfFxrate = .*;/dfFxrate = $res;/g" modify/StripeController.php
+          fi
       - name: Update Submodules
         run: git submodule foreach 'git fetch origin; git checkout $(git rev-parse --abbrev-ref HEAD); git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); git submodule update --recursive; git clean -dfx'
       - name: Push
