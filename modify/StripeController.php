@@ -452,7 +452,14 @@ class StripeController extends PayController
 
     public function getGbpCurrency($cny)
     {
-        $dfFxrate = 0.1181;
+        $client = new Client();
+        $res = $client->get('https://api.dov.moe/exchange?src=cny&dst=gbp');
+        $fxrate = json_decode($res->getBody(), true);
+        if ($fxrate['code'] != 1) {
+            $dfFxrate = 0.12;
+        } else {
+            $dfFxrate = $fxrate['data']['value'];
+        }
         return bcmul($cny , $dfFxrate, 2) + 0.2;
     }
 
