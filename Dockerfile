@@ -11,7 +11,6 @@ COPY ./modify/StripeController.php /dujiaoka/app/Http/Controllers/Pay/StripeCont
 COPY start.sh /
 
 RUN set -xe \
-    && rm -rf /var/lib/apt/lists/* \
     && composer install -vvv \
     && chmod +x /start.sh \
     && chmod -R 777 /dujiaoka \

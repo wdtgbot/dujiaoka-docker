@@ -22,12 +22,6 @@ jobs:
           token: ${{ secrets.REPO_TOKEN }}
           fetch-depth: 0
           submodules: true
-      - name: Update Exchange Rates
-        run: |
-          sudo apt-get install -y jq bc
-          usdcny=`curl -sSL "http://api.currencylayer.com/live?access_key=6aa8e7d031256487cd884d292553d6e2&f" | jq '.quotes.USDCNY'`
-          res=0`echo "scale=4;1/$usdcny" | bc`
-          sed -i "s/dfFxrate = .*;/dfFxrate = $res;/g" modify/StripeController.php
       - name: Update Submodules
         run: git submodule foreach 'git fetch origin; git checkout $(git rev-parse --abbrev-ref HEAD); git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); git submodule update --recursive; git clean -dfx'
       - name: Push

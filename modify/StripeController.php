@@ -27,7 +27,7 @@ class StripeController extends PayController
                     \Stripe\Stripe::setApiKey($this->payGateway->merchant_id);
                     $amount = bcmul($this->order->actual_price, 100, 2);
                     $price = $this->order->actual_price;
-                    $usd = bcmul($this->getUsdCurrency($this->order->actual_price), 100, 2);
+                    $gbp = bcmul($this->getGbpCurrency($this->order->actual_price), 100, 2);
                     $orderid = $this->order->order_sn;
                     $pk = $this->payGateway->merchant_id;
                     $return_url = site_url() . $this->payGateway->pay_handleroute . '/return_url/?orderid=' . $this->order->order_sn;
@@ -196,7 +196,6 @@ class StripeController extends PayController
     <div class=\"am-tabs\" data-am-tabs=\"\">
         <ul class=\"am-tabs-nav am-nav am-nav-tabs\">
             <li class=\"am-active\"><a href=\"#alipay\">Alipay 支付宝</a></li>
-            <li class=\"request-wechat-pay\"><a href=\"#wcpay\">微信支付</a></li>
             <li class=\"request-card-pay\"><a href=\"#cardpay\">银行卡支付</a></li>
         </ul>
         <div class=\"am-tabs-bd am-tabs-bd-ofv\"
@@ -204,13 +203,6 @@ class StripeController extends PayController
             <div class=\"am-tab-panel am-active\" id=\"alipay\">
                 <a class=\"am-btn am-btn-lg am-btn-warning am-btn-primary\" id=\"alipaybtn\" href=\"#\">进入支付宝付款</a>
                 <p></p>
-            </div>
-            <div class=\"am-tab-panel am-fade\" id=\"wcpay\">
-                <div class=\"text-align:center; margin:0 auto; width:60%\">
-                    <div class=\"wcpay-qrcode\" style=\"text-align: center; \" data-requested=\"0\">
-                        正在加载中...
-                    </div>
-                </div>
             </div>
             <div class=\"am-tab-panel am-fade\" id=\"cardpay\">
                 <div class=\"text-align:center; margin:0 auto; width:60%\">
@@ -329,8 +321,8 @@ class StripeController extends PayController
     (function () {
         stripe.createSource({
             type: 'alipay',
-            amount: $amount,
-            currency: 'cny',
+            amount: $gbp,
+            currency: 'gbp',
             // 这里你需要渲染出一些用户的信息，不然后期没法知道是谁在付钱
             owner: {
                 name: '$orderid',
@@ -348,8 +340,6 @@ class StripeController extends PayController
             type: 'GET',
             success: function (result) {
                 if (result == \"success\") {
-                    $(\".wcpay-qrcode\").html(\"\");
-                    $(\".wcpay-qrcode\").html(\"<p class='am-alert am-alert-success'>支付成功，正在跳转页面</p>\");
                     window.setTimeout(function () {
                         location.href = \"/detail-order-sn/$orderid\"
                     }, 800);
@@ -358,33 +348,7 @@ class StripeController extends PayController
                 }
             }
         });
-    }
-    $(\".request-wechat-pay\").click(function () {
-        if ($(\".wcpay-qrcode\").data(\"requested\") == 0) {
-            stripe.createSource({
-                type: 'wechat',
-                amount: $usd,
-                currency: 'usd',
-                owner: {
-                    name: '$orderid'
-                },
-            }).then(function (result) {
-                if (result.source.id) {
-                    $(\".wcpay-qrcode\").html(\"<p class='am-alert am-alert-success'>打开微信 - 扫一扫</p>\");
-                    $(\".wcpay-qrcode\").qrcode(result.source.wechat.qr_code_url);
-                    $(\".wcpay-qrcode\").data(\"requested\", 1);
-                    $(\".wcpay-qrcode\").data(\"sid\", result.source.id);
-                    $(\".wcpay-qrcode\").data(\"scs\", result.source.client_secret);
-                    source = result.source.id;
-                    setTimeout(\"paymentcheck()\", 3000);
-                } else {
-                    alert(\"微信支付加载失败\");
-                    $(\".wcpay-qrcode\").html(\"<p class='am-alert am-alert-danger'>加载失败，请刷新页面。</p>\");
-                }
-                // handle result.error or result.source
-            });
-        }
-    });
+    };
 </script>
 </body>
 </html>";
@@ -416,7 +380,7 @@ class StripeController extends PayController
                 'source' => $data['source'],
             ]);
             if ($source_object->owner->name == $data['orderid']) {
-                $this->orderProcessService->completedOrder($data['orderid'], $source_object->amount / 100, $source_object->id);
+                $this->orderProcessService->completedOrder($data['orderid'], $cacheord->actual_price, $source_object->id);
             }
         }
         return redirect(url('detail-order-sn', ['orderSN' => $data['orderid']]));
@@ -463,8 +427,8 @@ class StripeController extends PayController
                 $payGateway = $this->payService->detail($cacheord->pay_id);
                 \Stripe\Stripe::setApiKey($payGateway -> merchant_pem);
                 $result = \Stripe\Charge::create([
-                    'amount' => bcmul($this->getUsdCurrency($cacheord->actual_price), 100,0),
-                    'currency' => 'usd',
+                    'amount' => bcmul($this->getGbpCurrency($cacheord->actual_price), 100,0),
+                    'currency' => 'gbp',
                     'source' => $data['stripeToken'],
                 ]);
                 if ($result->status == 'succeeded') {
@@ -480,15 +444,23 @@ class StripeController extends PayController
     
 
     /**
-     * 根据RMB获取美元
+     * 根据RMB获取英镑
      * @param $cny
      * @return float|int
      * @throws \Exception
      */
-    public function getUsdCurrency($cny)
+
+    public function getGbpCurrency($cny)
     {
-        $dfFxrate = 0.1567;
-        return bcmul($cny , $dfFxrate, 2) + 0.3;
+        $client = new Client();
+        $res = $client->get('https://api.dov.moe/exchange?src=cny&dst=gbp');
+        $fxrate = json_decode($res->getBody(), true);
+        if ($fxrate['code'] != 1) {
+            $dfFxrate = 0.12;
+        } else {
+            $dfFxrate = $fxrate['data']['value'] * 1.029;
+        }
+        return bcmul($cny , $dfFxrate, 2) + 0.2;
     }
 
 
